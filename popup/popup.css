@@ -19,8 +19,17 @@ h1 {
   text-align: center;
 }
 
+.filters {
+  margin-top: 30px;
+}
+
+.filter-text {
+  font-size: 14px;
+  margin-right: 10px;
+}
+
 .data-ctn {
-  margin-top: 50px;
+  margin-top: 30px;
   display: flex;
   align-items: center;
   justify-content: space-around;

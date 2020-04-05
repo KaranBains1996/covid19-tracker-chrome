@@ -3,25 +3,43 @@ const activeCtn = document.querySelector('.active');
 const recoveredCtn = document.querySelector('.recovered');
 const deceasedCtn = document.querySelector('.deceased');
 const lastUpdatedSpan = document.querySelector('.lu-value');
+const statesDropDown = document.querySelector('.states');
+let cachedResponse = null;
 
 async function init() {
   const response = await fetch('https://api.covid19india.org/data.json');
   const body = await response.json();
+  cachedResponse = body.statewise;
 
-  const confirmedDelta = body.statewise[0].deltaconfirmed;
-  const recoveredDelta = body.statewise[0].deltarecovered;
-  const deceasedDelta = body.statewise[0].deltadeaths;
+  setStatesFilter(body.statewise);
+  updateData(body.statewise, 'TT');
+}
 
-  const confirmedCount = body.statewise[0].confirmed;
-  const activeCount = body.statewise[0].active;
-  const recoveredCount = body.statewise[0].recovered;
-  const deceasedCount = body.statewise[0].deaths;
+function updateData(stateData, selectedState) {
+  const data = stateData.find(s => s.statecode === selectedState);
 
-  const lastUpdatedTime = body.statewise[0].lastupdatedtime;
+  const confirmedDelta = data.deltaconfirmed;
+  const recoveredDelta = data.deltarecovered;
+  const deceasedDelta = data.deltadeaths;
+
+  const confirmedCount = data.confirmed;
+  const activeCount = data.active;
+  const recoveredCount = data.recovered;
+  const deceasedCount = data.deaths;
+
+  const lastUpdatedTime = data.lastupdatedtime;
 
   updateDeltas(confirmedDelta, recoveredDelta, deceasedDelta);
   updateValues(confirmedCount, activeCount, recoveredCount, deceasedCount);
   updateLastUpdatedTime(lastUpdatedTime);
+}
+
+function setStatesFilter(statesData) {
+  let options = '';
+  for (const s of statesData) {
+    options += `<option value='${s.statecode}'>${s.state}</option>`
+  }
+  statesDropDown.innerHTML = options;
 }
 
 function updateDeltas(confirmedDelta, recoveredDelta, deceasedDelta) {
@@ -40,5 +58,12 @@ function updateValues(confirmedCount, activeCount, recoveredCount, deceasedCount
 function updateLastUpdatedTime(time) {
   lastUpdatedSpan.innerHTML = time;
 }
+
+statesDropDown.addEventListener('change', function (e) {
+  const selectedState = e.target.value;
+  if (cachedResponse) {
+    updateData(cachedResponse, selectedState);
+  }
+});
 
 window.onload = init;
