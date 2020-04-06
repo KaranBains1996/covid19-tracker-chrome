@@ -1,6 +1,6 @@
 {
   "name": "COVID-19 India Tracker",
-  "version": "1.0",
+  "version": "0.0.1",
   "description": "Chrome extension that tracks COVID-19 cases in India.",
   "browser_action": {
     "default_icon": {
